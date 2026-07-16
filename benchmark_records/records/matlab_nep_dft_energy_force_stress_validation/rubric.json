@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "record_id": "matlab_nep_dft_energy_force_stress_validation",
+  "category": "统计",
+  "domain": "统计学+数学",
+  "max_score": 100,
+  "pass_score": 80,
+  "scoring_mode": "deterministic_ground_truth_comparison",
+  "criteria": [
+    {
+      "id": "required_files_and_schema",
+      "points": 8,
+      "checks": "四个必需文件可解析；schema_version、synthetic_data、校准方法和 Voigt 顺序正确。"
+    },
+    {
+      "id": "structure_and_residual_coverage",
+      "points": 8,
+      "checks": "residuals.csv 恰含 106 个不重复 structure_id，集合、材料和原子数与 Ground Truth 一致。"
+    },
+    {
+      "id": "overall_energy_metrics",
+      "points": 8,
+      "checks": "overall 的 count、energy_RMSE_meV_atom 和 energy_R2 在规定容差内。"
+    },
+    {
+      "id": "overall_force_metrics",
+      "points": 12,
+      "checks": "overall 的 force_RMSE_eV_A 和 force_R2 在规定容差内；这是高维响应变量的展平统计，该项也会暴露键对齐错误。"
+    },
+    {
+      "id": "overall_stress_metrics",
+      "points": 8,
+      "checks": "overall 的 stress_RMSE_GPa 和 stress_R2 在规定容差内。"
+    },
+    {
+      "id": "per_material_metrics",
+      "points": 16,
+      "checks": "三个材料分组的 count 及六项 RMSE/R2 指标逐字段评分。"
+    },
+    {
+      "id": "per_structure_residual_values",
+      "points": 12,
+      "checks": "按 structure_id 对齐后，逐结构能量、力、应力残差及最大力误差逐字段评分。"
+    },
+    {
+      "id": "training_and_reliability",
+      "points": 10,
+      "checks": "训练历史统计、共同收敛、无明显过拟合、精度通过及应用层可靠性布尔汇总正确。"
+    },
+    {
+      "id": "constrained_calibration_parameters",
+      "points": 8,
+      "checks": "lsqlin 方法、固定目标尺度/权重、边界、正则、严格凸性、退出状态、目标值和三个最优参数正确。"
+    },
+    {
+      "id": "calibrated_before_after_metrics",
+      "points": 8,
+      "checks": "校准前后四个分组的 count、三类 RMSE 和三类 R² 逐字段正确。"
+    },
+    {
+      "id": "residual_distribution_statistics",
+      "points": 2,
+      "checks": "fitdist 正态拟合得到的校准前后残差 mean/std 以及直接 RMSE、样本数正确。"
+    }
+  ],
+  "numeric_tolerance": {
+    "default_relative": 1e-6,
+    "energy_RMSE_meV_atom_absolute": 1e-6,
+    "force_RMSE_eV_A_absolute": 1e-8,
+    "stress_RMSE_GPa_absolute": 1e-8,
+    "R2_absolute": 1e-8,
+    "residual_absolute": 1e-7,
+    "loss_absolute": 1e-9,
+    "calibration_parameter_absolute": 1e-9,
+    "calibration_metric_absolute": 1e-8
+  },
+  "anti_shortcut_notes": [
+    "结构顺序不构成配对依据，必须使用 structure_id。",
+    "原子力顺序不构成配对依据，必须使用 atom_id。",
+    "校准只能使用题面定义的三个全局参数，不允许按材料或结构增加参数。",
+    "评分器只比较提交输出与隔离的 Ground Truth，不要求泄漏审计。"
+  ]
+}

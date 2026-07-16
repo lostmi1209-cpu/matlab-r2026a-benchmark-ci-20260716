@@ -1,0 +1,69 @@
+{
+  "rubric_schema_version": "1.0",
+  "record_id": "matlab_gpumd_conductivity_robustness",
+  "total_points": 100,
+  "evaluation_type": "deterministic_matlab",
+  "evaluator": "harness/evaluate_submission.m",
+  "evaluator_signature": "evaluate_submission(submission_dir, ground_truth_dir, report_path)",
+  "pass_score": 100,
+  "steps": [
+    {
+      "id": "files_and_schema",
+      "points": 8,
+      "description": "JSON、CSV 和 MATLAB Trace 三个必需文件存在；JSON/CSV 可解析；固定 schema 字段与 Trace 标记正确。",
+      "machine_check": "三个文件存在各 1 分，JSON/CSV 可解析各 1 分，schema_version 与 synthetic_data 各 1 分；非空 Trace 必须逐行含全部规定标记，且 NORMCDF_COVERAGE 数值在 1e-12 容差内，合计占 1 分。"
+    },
+    {
+      "id": "run_coverage",
+      "points": 8,
+      "description": "run_estimates.csv 覆盖 Ground Truth 的全部 81 个唯一 run_id。",
+      "machine_check": "ID 覆盖率占 6 分；恰好 81 行且无重复占 2 分。"
+    },
+    {
+      "id": "equilibration_rule",
+      "points": 8,
+      "description": "每条轨迹严格采用 600 ps 截断，并保留正确样本数。",
+      "machine_check": "burn_in_ps 匹配率占 4 分，n_samples 匹配率占 4 分。"
+    },
+    {
+      "id": "run_level_estimates",
+      "points": 18,
+      "description": "81 条运行的温度、面内、面外、总热导率和分量闭合误差准确。",
+      "machine_check": "5 个数值列各占 3.6 分，按匹配运行的容差通过率线性给分；温度绝对容差 1e-3 K，其余绝对容差 1e-6 W/(m·K)。"
+    },
+    {
+      "id": "material_aggregation",
+      "points": 18,
+      "description": "三个对象组的响应分量均值、总响应、跨 27 个独立运行计算的标准误差、95% 置信区间和运行数准确。",
+      "machine_check": "每个对象组的 7 个统计字段等权；数值绝对容差 1e-6，n_runs 必须精确。把 251 个时间点当独立样本得到的伪重复 SEM/CI 不会通过。"
+    },
+    {
+      "id": "statistical_consistency",
+      "points": 8,
+      "description": "响应分量算术闭合、按统计均值计算的对象组降序、normcdf 覆盖率及总体结论布尔值正确。",
+      "machine_check": "三个对象组的分量闭合共 2 分，依据均值计算的完整排序 2 分，三个 conclusions 布尔字段各 1 分，normcdf(1.96)-normcdf(-1.96) 与 Ground Truth 在 1e-12 容差内占 1 分；直接填写 0.95 不通过。"
+    },
+    {
+      "id": "size_robustness",
+      "points": 10,
+      "description": "每个对象组在尺寸因素三个水平上的组均值、最大相对效应偏差和 5% 判定正确。",
+      "machine_check": "每个对象组等权；三个因素水平的均值与最大相对偏差须在 1e-6 绝对容差内，布尔判定须精确。"
+    },
+    {
+      "id": "drive_robustness",
+      "points": 10,
+      "description": "每个对象组在驱动力因素三个水平上的组均值、最大相对效应偏差和 5% 判定正确。",
+      "machine_check": "每个对象组等权；三个因素水平的均值与最大相对偏差须在 1e-6 绝对容差内，布尔判定须精确。"
+    },
+    {
+      "id": "size_convergence_optimization",
+      "points": 12,
+      "description": "使用 lsqcurvefit 对三个对象组拟合 kappa(L)=k_inf-a/L，并正确报告参数、观测/拟合值、RMSE 与收敛结论。",
+      "machine_check": "每个对象组占 4 分；k_inf、a、RMSE、相对 RMSE、三个观测均值、三个拟合值和 converged 按隐藏 MATLAB Ground Truth 容差评分。"
+    }
+  ],
+  "anti_leakage": {
+    "ground_truth_visibility": "maintainer_only",
+    "rule": "被测模型只能获得 prompt.txt 和 inputs/，不能访问 ground_truth/ 或评分器内部答案。"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "harness_schema_version": "1.0",
+  "record_id": "matlab_gpumd_conductivity_robustness",
+  "purpose": "evaluate_submission",
+  "status": "ready_after_ground_truth_generation",
+  "agent": {
+    "type": "deterministic_matlab_script",
+    "llm_used": false,
+    "status": "pending"
+  },
+  "execution_environment": {
+    "matlab_release": "R2026a",
+    "required_products": [
+      "MATLAB"
+    ],
+    "third_party_dependencies": []
+  },
+  "entrypoint": "harness/evaluate_submission.m",
+  "function_signature": "evaluate_submission(submission_dir, ground_truth_dir, report_path)",
+  "pass_score": 100,
+  "max_score": 100,
+  "example_command": "matlab -batch \"addpath('harness'); report=evaluate_submission('submission','ground_truth/output','evaluation/grade.json'); disp(report)\"",
+  "submission_files": [
+    "conductivity_summary.json",
+    "run_estimates.csv",
+    "matlab_trace.txt"
+  ],
+  "scored_analysis": [
+    "SEM and 95 percent confidence intervals",
+    "size and drive factor robustness",
+    "lsqcurvefit size-convergence parameters and errors"
+  ],
+  "ground_truth_files": [
+    "conductivity_summary.json",
+    "run_estimates.csv"
+  ],
+  "report_schema": {
+    "score": "number in [0,100]",
+    "max_score": 100,
+    "passed": "boolean",
+    "details": "step-level earned points and messages"
+  },
+  "self_check": "Using ground_truth/output as both submission_dir and ground_truth_dir must return 100 points."
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "record_id": "matlab_vacf_pdos_interface_localization",
+  "purpose": "generate_ground_truth",
+  "status": "pending",
+  "execution_environment": {
+    "provider": "GitHub Actions",
+    "runner": "ubuntu-latest",
+    "matlab_release": "R2026a",
+    "required_products": [
+      "MATLAB",
+      "Signal Processing Toolbox",
+      "Statistics and Machine Learning Toolbox"
+    ],
+    "third_party_dependencies": []
+  },
+  "entrypoint": "ground_truth/generate_ground_truth.m",
+  "command": "matlab -batch \"run('ground_truth/generate_ground_truth.m')\"",
+  "inputs": [
+    "inputs/systems.csv",
+    "inputs/trajectories/cssnbr3_seed1.h5",
+    "inputs/trajectories/cs2snbr6_seed1.h5",
+    "inputs/trajectories/hetero-n2_seed1.h5"
+  ],
+  "expected_input_counts": {
+    "systems": 3,
+    "trajectory_files": 3
+  },
+  "outputs": [
+    "ground_truth/output/vacf.csv",
+    "ground_truth/output/pdos.csv",
+    "ground_truth/output/phonon_summary.json",
+    "ground_truth/output/ground_truth.mat",
+    "ground_truth/output/matlab_trace.txt"
+  ],
+  "provenance": {
+    "synthetic_data": true,
+    "numeric_source": "MATLAB computation over the three public fixed-seed HDF5 trajectories",
+    "legacy_python_output_used": false
+  }
+}

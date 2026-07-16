@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "id": "matlab_vacf_pdos_interface_localization",
+  "title": "信号处理/无线通信领域：多通道时序信号的自相关、FFT 频带能量与空间统计归因",
+  "language": "zh-CN",
+  "category": "信号处理/无线通信",
+  "Toolbox": [
+    "Signal Processing Toolbox",
+    "Statistics and Machine Learning Toolbox"
+  ],
+  "domain": "信号处理/无线通信+统计学",
+  "primary_domain": "信号处理/无线通信",
+  "secondary_domain": "统计学",
+  "task_type": "MATLAB 多通道信号处理、频带分析与统计推断",
+  "synthetic_data": true,
+  "query_prompt_file": "prompt.txt",
+  "input_attachments": [
+    {
+      "path": "inputs/systems.csv",
+      "description": "三个材料体系与固定种子 HDF5 轨迹的映射。"
+    },
+    {
+      "path": "inputs/trajectories/cssnbr3_seed1.h5",
+      "description": "CsSnBr3 合成速度轨迹。"
+    },
+    {
+      "path": "inputs/trajectories/cs2snbr6_seed1.h5",
+      "description": "Cs2SnBr6 合成速度轨迹。"
+    },
+    {
+      "path": "inputs/trajectories/hetero-n2_seed1.h5",
+      "description": "N=2 异质结构合成速度轨迹及界面标签。"
+    }
+  ],
+  "toolboxes": [
+    {
+      "name": "Signal Processing Toolbox",
+      "purpose": "使用 hann(N,'symmetric') 构造对称 Hann 窗并完成规定的频谱分析流程。"
+    },
+    {
+      "name": "Statistics and Machine Learning Toolbox",
+      "purpose": "实际调用 ttest2 完成界面与非界面通道带功率的 Welch 检验和 95% 置信区间估计。"
+    }
+  ],
+  "third_party_environment": {
+    "dependencies": [],
+    "note": "除 MATLAB、Signal Processing Toolbox 和 Statistics and Machine Learning Toolbox 外不需要第三方软件或 Python 包。"
+  },
+  "ground_truth": {
+    "status": "pending_matlab_execution",
+    "generator": "ground_truth/generate_ground_truth.m",
+    "output_directory": "ground_truth/output",
+    "expected_files": [
+      "vacf.csv",
+      "pdos.csv",
+      "phonon_summary.json",
+      "ground_truth.mat",
+      "matlab_trace.txt"
+    ],
+    "provenance_rule": "数值答案必须由 MATLAB 直接读取三个公开 HDF5 合成轨迹后生成，不导入旧 Python 参考输出。"
+  },
+  "difficulty": "hard",
+  "rubric_file": "rubric.json",
+  "generation_harness_file": "harness/generation.json",
+  "evaluation_harness_file": "harness/evaluation.json",
+  "evaluation_entrypoint": "harness/evaluate_submission.m",
+  "model_runs": {
+    "domestic": {
+      "status": "pending",
+      "output": null,
+      "trace": null
+    },
+    "foreign": {
+      "status": "pending",
+      "output": null,
+      "trace": null
+    },
+    "note": "尚未运行国内或国外模型，不填充或伪造 Output/Trace。"
+  },
+  "judge": {
+    "status": "pending",
+    "model": null,
+    "scores": null,
+    "trace": null,
+    "note": "尚未执行 Judge，不填充或伪造评分与 Trace。"
+  },
+  "completion_status": "pending_ground_truth_generation_and_model_evaluation"
+}

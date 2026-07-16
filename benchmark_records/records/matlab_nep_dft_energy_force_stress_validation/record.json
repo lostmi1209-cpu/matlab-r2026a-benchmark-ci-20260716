@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0",
+  "id": "matlab_nep_dft_energy_force_stress_validation",
+  "title": "统计学+数学：高维回归误差、泛化与受约束后验校准",
+  "category": "统计",
+  "domain": "统计学+数学",
+  "synthetic_data": true,
+  "query_prompt_file": "prompt.txt",
+  "input_attachments": [
+    {
+      "path": "inputs/test_reference.extxyz",
+      "format": "EXTXYZ",
+      "visibility": "public",
+      "description": "106 个合成 DFT 参考结构，含 structure_id、material、总能量、Voigt 应力、atom_id 和原子力。"
+    },
+    {
+      "path": "inputs/test_nep_predictions.h5",
+      "format": "HDF5",
+      "visibility": "public",
+      "description": "合成 NEP 预测，含按 offsets 分段的结构能量、应力和原子力。"
+    },
+    {
+      "path": "inputs/training_history.csv",
+      "format": "CSV",
+      "visibility": "public",
+      "description": "0 至 100000 步的合成训练集与测试集损失历史。"
+    }
+  ],
+  "toolboxes": [
+    {
+      "name": "Statistics and Machine Learning Toolbox",
+      "required": true,
+      "purpose": "高维回归预测的分组统计、正态残差分布拟合与泛化评估；R² 严格按题面 SSE/SST 定义计算"
+    },
+    {
+      "name": "Optimization Toolbox",
+      "required": true,
+      "purpose": "使用 lsqlin 求解带边界和 L2 正则的唯一三参数后验校准问题"
+    }
+  ],
+  "third_party_environment": {
+    "required": false,
+    "software": [],
+    "network_access": false,
+    "notes": "不依赖 GPUMD、NEP 可执行程序、Python 包或其他第三方软件。"
+  },
+  "ground_truth": {
+    "generator": "ground_truth/generate_ground_truth.m",
+    "output_directory": "ground_truth/output",
+    "expected_files": [
+      "metrics.json",
+      "residuals.csv",
+      "training_assessment.json",
+      "calibration.json",
+      "ground_truth.mat",
+      "matlab_trace.txt"
+    ],
+    "execution_status": "pending",
+    "provenance": "由 MATLAB 对公开合成输入确定性计算；不是论文原始 DFT/NEP 数据。"
+  },
+  "difficulty": {
+    "level": "hard",
+    "rationale": "需要从异构附件构造一致的观测-预测样本，完成双层键对齐、分组 RMSE/R²、残差分布与泛化判断，并把三类响应联合写成严格凸的有界正则最小二乘问题。"
+  },
+  "rubric_file": "rubric.json",
+  "generation_harness_file": "harness/generation.json",
+  "evaluation_harness_file": "harness/evaluation.json",
+  "model_runs": {
+    "domestic": {
+      "status": "pending",
+      "model": null,
+      "output_directory": null,
+      "trace_file": null
+    },
+    "foreign": {
+      "status": "pending",
+      "model": null,
+      "output_directory": null,
+      "trace_file": null
+    }
+  },
+  "judge": {
+    "status": "pending",
+    "model": null,
+    "scores": null,
+    "trace_file": null
+  },
+  "completion_status": "record_ready_ground_truth_pending"
+}

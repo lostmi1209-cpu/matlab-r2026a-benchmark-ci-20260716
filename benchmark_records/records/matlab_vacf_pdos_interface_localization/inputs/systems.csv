@@ -1,0 +1,4 @@
+filename,material,system_type,layer_count
+cssnbr3_seed1.h5,CsSnBr3,bulk,0
+cs2snbr6_seed1.h5,Cs2SnBr6,bulk,0
+hetero-n2_seed1.h5,hetero_N2,heterostructure,2

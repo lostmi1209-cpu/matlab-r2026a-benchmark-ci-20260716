@@ -1,0 +1,45 @@
+{
+  "harness_schema_version": "1.0",
+  "record_id": "matlab_gpumd_conductivity_robustness",
+  "purpose": "generate_ground_truth",
+  "status": "pending",
+  "agent": {
+    "type": "deterministic_matlab_script",
+    "llm_used": false,
+    "status": "pending"
+  },
+  "execution_environment": {
+    "provider": "GitHub Actions",
+    "runner": "ubuntu-latest",
+    "matlab_release": "R2026a",
+    "setup_action": "matlab-actions/setup-matlab",
+    "required_products": [
+      "MATLAB",
+      "Statistics and Machine Learning Toolbox",
+      "Optimization Toolbox"
+    ],
+    "third_party_dependencies": []
+  },
+  "timeout_seconds": 900,
+  "entrypoint": "ground_truth/generate_ground_truth.m",
+  "command": "matlab -batch \"run('ground_truth/generate_ground_truth.m')\"",
+  "inputs": [
+    "inputs/runs.csv",
+    "inputs/raw/*/kappa.out"
+  ],
+  "expected_input_counts": {
+    "metadata_rows": 81,
+    "trajectory_files": 81
+  },
+  "outputs": [
+    "ground_truth/output/conductivity_summary.json",
+    "ground_truth/output/run_estimates.csv",
+    "ground_truth/output/ground_truth.mat",
+    "ground_truth/output/matlab_trace.txt"
+  ],
+  "provenance": {
+    "synthetic_data": true,
+    "numeric_source": "MATLAB computation over all 81 input trajectories",
+    "legacy_python_output_used": false
+  }
+}

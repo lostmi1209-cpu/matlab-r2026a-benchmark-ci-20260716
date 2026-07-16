@@ -1,0 +1,110 @@
+任务名称：统计学与数学——多因素重复实验的置信区间、效应稳健性与尺寸收敛优化
+
+背景与数据声明
+
+你将使用 MATLAB、Statistics and Machine Learning Toolbox 和 Optimization Toolbox，分析 81 条多因素重复实验时间序列。数据以 GPUMD/HNEMD 风格的热导率为应用背景，覆盖 3 个对象组、3 个尺寸水平、3 个驱动力水平和每个条件 3 个独立随机种子。核心考核内容是时间序列截断、重复实验汇总、标准误差、置信区间、分组效应、稳健性判定和约束最小二乘收敛拟合，不要求使用材料专业常识推断答案。所有输入均为固定随机种子生成的合成基准数据，不是论文原始科研数据，不得作为原始科研结论引用。
+
+输入文件
+
+1. `inputs/runs.csv`：每个运行的 `run_id`、材料、尺寸、长度、驱动力、随机种子、目标温度和采样设置。
+2. `inputs/raw/<run_id>/kappa.out`：对应运行的 CSV 格式时间序列，列为：
+   - `time_ps`
+   - `temperature_K`
+   - `kappa_in_W_mK`
+   - `kappa_out_W_mK`
+   - `kappa_total_W_mK`
+
+必须采用的分析规则
+
+1. 对每条轨迹固定丢弃 `time_ps < 600 ps` 的平衡段，只用 `time_ps >= 600 ps` 的样本。
+2. 每个运行的温度和三个热导率分量均采用保留样本的算术平均值。
+3. 每个对象组汇总全部 27 个独立运行。必须先把每条轨迹压缩为一个运行级估计，再在 27 个运行级估计之间计算统计量。标准误差为 27 个运行级总响应的样本标准差除以 `sqrt(27)`，95% 置信区间固定使用 `mean ± 1.96 * standard_error`。严禁把每条轨迹在 600 ps 后的 251 个时间点当作独立重复样本计算 SEM 或置信区间；这种伪重复会被隐藏评分识别。
+4. 必须实际调用 Statistics and Machine Learning Toolbox 的 `normcdf`，计算 `normcdf(1.96)-normcdf(-1.96)`，并将结果写入 `method.normal_reference_coverage`。直接用近似值 `0.95` 不能获得该项满分。
+5. 尺寸稳健性：先分别计算 `small`、`medium`、`large` 三组的运行级总热导率均值，再以三个组均值的算术平均值为中心，计算最大相对偏差：
+   `max(abs(group_mean - center) / center)`。
+6. 驱动力稳健性：对 `low`、`medium`、`high` 使用相同定义。
+7. 最大相对偏差不超过 `5%` 时，才可将相应对象组判为稳健。必须分别报告尺寸和驱动力结果，不得用显著性检验替代此 5% 规则。
+8. 完全依据计算得到的三个对象组总响应均值进行降序排列，并检查结果是否为：`CsSnBr3 > Cs2SnBr6 > hetero_N2`；不得根据材料名称或外部知识直接填写顺序。
+9. 对每个对象组进行尺寸收敛拟合。先对每个尺寸水平的 9 个运行级总响应取均值，按 `L = [8, 16, 23] nm` 排列得到 `y`，再实际调用 Optimization Toolbox 的 `lsqcurvefit` 拟合：
+   `kappa(L) = k_inf - a / L`。
+10. 拟合必须使用参数顺序 `p = [k_inf, a]`、下界 `[0, 0]`、上界 `[Inf, Inf]`。推荐初值为：
+   `k_inf0 = max(y) + max(max(y)-min(y), 0.01*mean(y))`，
+   `a0 = max(mean((k_inf0-y).*L), eps)`。
+   该模型对三个不同尺寸点和两个参数具有唯一的约束最小二乘解。
+11. 尺寸拟合 RMSE 定义为 `sqrt(mean((fitted-y).^2))`，相对 RMSE 为 `RMSE/mean(y)`。仅当 `lsqcurvefit` 的 `exitflag > 0`、`k_inf >= max(y)`、`a >= 0` 且相对 RMSE 不超过 1% 时，将 `converged` 记为 `true`。
+
+需要完成的工作
+
+1. 实际读取并处理全部 81 条 `kappa.out`，验证时间轴严格递增且每条轨迹在 600 ps 后至少有 100 个样本。
+2. 生成 81 行运行级估计，不能只从 `runs.csv` 或文件名推测答案。
+3. 汇总每个对象组的面内、面外和总响应，以及跨 27 次重复运行的标准误差和 95% 置信区间。
+4. 将尺寸和驱动力视为两个因素，计算各水平组均值、相对总体中心的最大效应偏差与 5% 稳健性布尔值。
+5. 使用 `lsqcurvefit` 完成三个对象组的尺寸收敛优化，报告无限尺寸估计、收敛系数、拟合误差、拟合曲线值与收敛布尔值。
+6. 根据统计汇总结果给出对象组排序和三个总体结论。
+
+提交目录和输出文件
+
+将下列三个文件写入 `submission/`。文件名、列名、JSON 字段名和大小写必须严格一致。所有数值必须是有限数，JSON 不得含 `NaN` 或 `Inf`。
+
+一、`submission/run_estimates.csv`
+
+必须恰好包含 81 个唯一 `run_id`，列名如下：
+
+`run_id,material,size_label,length_nm,drive_label,driving_force_A_inv,seed,burn_in_ps,n_samples,mean_temperature_K,kappa_in_W_mK,kappa_out_W_mK,kappa_total_W_mK,component_closure_error_W_mK`
+
+其中 `component_closure_error_W_mK` 定义为：
+
+`abs(kappa_in_W_mK + kappa_out_W_mK - kappa_total_W_mK)`
+
+二、`submission/conductivity_summary.json`
+
+JSON 顶层必须包含：
+
+1. `schema_version`：固定为字符串 `"1.0"`。
+2. `synthetic_data`：固定为布尔值 `true`。
+3. `method`：至少含 `burn_in_ps`、`run_estimator`、`ensemble`、`normal_reference_coverage`。其中 `normal_reference_coverage` 必须等于 MATLAB `normcdf(1.96)-normcdf(-1.96)` 的实际计算结果。
+4. `materials`：包含 `CsSnBr3`、`Cs2SnBr6`、`hetero_N2`，每种材料包含：
+   - `kappa_in_W_mK`
+   - `kappa_out_W_mK`
+   - `kappa_total_W_mK`
+   - `standard_error_W_mK`
+   - `ci95_low_W_mK`
+   - `ci95_high_W_mK`
+   - `n_runs`
+5. `physical_order`：三个材料名构成的降序数组。
+6. `size_robustness`：每种材料包含 `group_means_W_mK`、`max_relative_deviation`、`robust_within_5_percent`；组均值字段为 `small`、`medium`、`large`。
+7. `drive_robustness`：结构相同；组均值字段为 `low`、`medium`、`high`。
+8. `size_convergence_fit`：包含 `CsSnBr3`、`Cs2SnBr6`、`hetero_N2`；每个对象组至少包含：
+   - `model`：固定为 `kappa(L)=k_inf-a/L`
+   - `lengths_nm`
+   - `observed_group_means_W_mK`
+   - `fitted_group_means_W_mK`
+   - `k_inf_W_mK`
+   - `a_W_nm_mK`
+   - `rmse_W_mK`
+   - `relative_rmse`
+   - `exitflag`
+   - `converged`
+9. `conclusions`：包含以下布尔字段：
+   - `size_invariant_within_5_percent`
+   - `drive_invariant_within_5_percent`
+   - `ordering_matches_expected_group_order`
+
+三、`submission/matlab_trace.txt`
+
+该文件是 MATLAB 机器执行日志，不是自然语言推理过程。除正常运行日志外，必须逐行包含以下可机器读取的标记：
+
+`SYNTHETIC_DATA=true`
+`TRAJECTORIES_PROCESSED=81`
+`BURN_IN_PS=600`
+`POST_BURN_IN_UNIT=independent_run`
+`NORMCDF_COVERAGE=<MATLAB实际计算值>`
+`LSQCURVEFIT_MATERIALS=3`
+`OUTPUT_JSON=conductivity_summary.json`
+`OUTPUT_CSV=run_estimates.csv`
+
+Trace 必须来自完成本次计算的 MATLAB 运行；不得提交空文件。隐藏评分会同时核对 Trace 标记和 JSON/CSV 数值，只有标记而无正确数值不能得满分。
+
+评分说明
+
+评分使用 `rubric.json` 中的 100 分分步机器 Rubric。隐藏 Ground Truth 由 MATLAB 直接读取同一批 81 条合成轨迹生成。不得读取或依赖维护者侧 `ground_truth/` 内容完成任务。

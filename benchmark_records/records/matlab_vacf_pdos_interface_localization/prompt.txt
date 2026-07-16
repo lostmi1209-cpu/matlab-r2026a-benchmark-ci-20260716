@@ -1,0 +1,58 @@
+题目：信号处理/无线通信领域：多通道时序信号的自相关、FFT 频带能量与空间统计归因
+
+必须使用 MATLAB R2026a、Signal Processing Toolbox 和 Statistics and Machine Learning Toolbox 完成本题。所有输入均为固定随机种子生成的合成数据，不是论文原始科研数据。
+
+背景与目标
+
+本题的主领域是信号处理/无线通信与统计学，考查多通道均匀采样时序信号的去公共模态、自相关、FFT 功率谱、频带能量、通道空间分组归因及显著性检验。钙钛矿速度轨迹、VACF 和 PDOS 仅作为与论文对应的应用背景。输入为固定随机种子生成的合成轨迹，不是论文原始分子动力学数据，也不能作为真实科研结果引用。请比较 CsSnBr3、Cs2SnBr6 和 N=2 异质结构（hetero_N2），判断异质结构是否表现出更快的 VACF 衰减、更强的 2–3 THz 谱权重，以及界面通道的显著能量增强。
+
+公开输入
+
+1. `inputs/systems.csv`：材料名称、体系类型和 HDF5 文件名映射。
+2. `inputs/trajectories/*.h5`：每个文件包含以下数据集：
+   - `/velocities_A_ps`：速度，逻辑维度为 `[frame, atom, xyz]`，单位 Å/ps。不同 HDF5 读取器可能返回不同的维度顺序，必须根据时间点数、原子数和三维分量进行校正。
+   - `/time_fs`：时间，单位 fs。
+   - `/mass_amu`：原子质量，单位 amu。
+   - `/region`：每个原子的区域标签；`interface` 表示界面原子。
+
+必须采用的方法
+
+1. 对每一帧计算质量加权的质心速度，并从该帧所有原子速度中去除：
+   `v_com(t) = sum_i(m_i v_i(t)) / sum_i(m_i)`。
+2. 去除质心运动后，再对每个原子、每个笛卡尔分量去除完整轨迹的时间均值。
+3. 用零填充 FFT 计算无偏 VACF。每个滞后量必须除以 `N-lag`，随后对全部原子和三个分量平均，并归一化到 `VACF(0)=1`。
+4. PDOS 必须使用长度为 N 的 `hann(N,'symmetric')` 对时间均值已去除的速度加窗。对时间维 FFT 后取模平方，先对 xyz 三个分量求和得到逐原子功率，再对原子平均得到总 PDOS。单边谱直接保留前 `floor(N/2)+1` 个频点，不额外乘 2；最后按频率积分归一化，使从 0 到 Nyquist 频率的积分为 1。
+5. 频率单位为 THz；因为时间单位转换到 ps 后，`1/ps = 1 THz`。
+6. `vacf_positive_integral_ps` 定义为 `trapz(time_ps, max(vacf,0))`。
+7. `band_fraction_2_3_THz` 定义为归一化 PDOS 在闭区间 2–3 THz 内的梯形积分。
+8. `interface_share_2_3_THz` 使用归一化前的逐原子功率，计算 2–3 THz 内界面原子功率占全部原子功率的比例。没有界面原子的体相材料填 0。
+9. 异质结构界面局域化成立的明确阈值是 `interface_share_2_3_THz > 0.90`。异质结构 2–3 THz 增强成立的阈值是其谱分数大于两个体相中较大值的 2 倍。
+10. 只对 `hetero_N2` 做空间分组统计。对每个原子定义未归一化的 2–3 THz 带功率 `P_i=trapz(f,atomic_power_i(f))`，按 `/region` 分成 `interface` 与 `non-interface` 两组。
+11. 必须实际使用 Statistics and Machine Learning Toolbox 的 `ttest2(interfacePower,nonInterfacePower,'Vartype','unequal','Alpha',0.05)` 做双侧 Welch 两独立样本 t 检验。报告界面组减非界面组的均值差、95% 置信区间、t 统计量、自由度、p 值和拒绝原假设的布尔值。
+12. 同时报告 Hedges g：先用两组样本方差计算合并标准差和 Cohen d，再用 `J=1-3/(4*(n_interface+n_noninterface)-9)` 做小样本校正，`hedges_g=J*d`。统计显著增强要求均值差为正、置信区间下界大于 0 且 Welch 检验拒绝等均值假设。
+13. `dominant_peak_THz` 是 `f>0.05 THz` 范围内 PDOS 最大频点；`band_peak_THz` 是 2–3 THz 内最大频点；`peak_candidates_THz` 是 `f>0.05 THz` 范围内功率最高的 6 个频点，并按频率升序输出。
+
+输出要求
+
+在 `submission/` 中生成以下三个 UTF-8 文件：
+
+1. `vacf.csv`
+   - 列顺序：`material,time_ps,vacf`
+   - 必须包含三个材料的完整时间轴，材料名严格使用 `CsSnBr3`、`Cs2SnBr6`、`hetero_N2`。
+2. `pdos.csv`
+   - 列顺序：`material,frequency_THz,pdos`
+   - 必须包含三个材料从 0 到 Nyquist 频率的完整单边谱。
+3. `phonon_summary.json`
+   - 顶层必须包含：`schema_version`（固定为字符串 `1.0`）、`synthetic_data`（固定为 `true`）、`systems`、`interface_statistics`、`comparisons`、`physical_conclusion` 和 `method`。
+   - `systems` 中每个材料必须包含：`filename`、`vacf_positive_integral_ps`、`band_fraction_2_3_THz`、`interface_share_2_3_THz`、`dominant_peak_THz`、`band_peak_THz`、`peak_candidates_THz`。
+   - `interface_statistics` 必须包含：`test`、`alpha`、`n_interface`、`n_noninterface`、`mean_interface_band_power`、`mean_noninterface_band_power`、`mean_difference`、`ci95_low`、`ci95_high`、`t_statistic`、`degrees_of_freedom`、`p_value`、`reject_equal_means`、`hedges_g`。
+   - `comparisons` 必须包含四个布尔值：`heterostructure_shorter_vacf_than_bulks`、`heterostructure_enhanced_2_3_THz_fraction`、`heterostructure_interface_localized_2_3_THz`、`heterostructure_interface_band_power_significant`。
+   - `physical_conclusion` 在四个比较均成立时填写 `interface_scattering_shortens_phonon_lifetime_and_localizes_2_3_THz_modes`。
+   - `method` 填写 `mass-weighted COM removal; time-mean removal; unbiased FFT VACF; symmetric Hann-window unit-integral PDOS; Welch t-test and Hedges g on per-atom 2-3 THz band power`。
+
+约束
+
+- 所有数值必须从公开合成输入计算得到。
+- 不得硬编码预期数值，不得访问维护者 Ground Truth 或评分器内部答案。
+- 输出不得含 NaN 或 Inf。
+- 三个输入都是有效、完整、均匀采样的合成信号；题目难度来自规定的信号处理与统计流程，而不是损坏数据、缺失值或格式陷阱。

@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "record_id": "matlab_vacf_pdos_interface_localization",
+  "total_points": 100,
+  "evaluation_type": "deterministic_matlab",
+  "evaluator": "harness/evaluate_submission.m",
+  "evaluator_signature": "evaluate_submission(submission_dir, ground_truth_dir, report_path)",
+  "pass_score": 100,
+  "steps": [
+    {
+      "id": "files_and_schema",
+      "points": 10,
+      "description": "三个必需输出存在且可解析，JSON 声明 schema_version=1.0、synthetic_data=true，并包含三个材料和界面统计结果。",
+      "machine_check": "按文件存在、CSV/JSON 可解析、固定顶层字段、材料键和 interface_statistics 逐项给分。"
+    },
+    {
+      "id": "curve_coverage",
+      "points": 10,
+      "description": "VACF 和 PDOS 对三个材料完整覆盖 Ground Truth 的时间轴与频率轴。",
+      "machine_check": "按 1e-8 舍入后的横坐标匹配率计算；VACF 与 PDOS 各占 5 分。"
+    },
+    {
+      "id": "vacf_curves",
+      "points": 15,
+      "description": "质量加权 COM 去除、时间均值去除和无偏 FFT 得到的归一化 VACF 曲线正确。",
+      "machine_check": "每个材料等权；覆盖率至少 95% 且与 Ground Truth 相关系数至少 0.995 得满分，覆盖率至少 80% 且相关系数至少 0.98 得半分。"
+    },
+    {
+      "id": "pdos_curves",
+      "points": 15,
+      "description": "对称 Hann 窗得到的非负、单位积分 PDOS 曲线正确。",
+      "machine_check": "每个材料等权；除使用与 VACF 相同的覆盖率和相关系数阈值外，还要求候选 PDOS 不小于 -1e-10。"
+    },
+    {
+      "id": "normalization_and_axes",
+      "points": 10,
+      "description": "三个材料均满足 VACF(0)=1、PDOS 非负且积分为 1，时间轴和频率轴有限且无重复。",
+      "machine_check": "每个材料的 VACF(0) 占 1 分、PDOS 非负与单位积分占 2 分，全部横坐标有效且无重复占 1 分。"
+    },
+    {
+      "id": "summary_metrics",
+      "points": 15,
+      "description": "正 VACF 积分、2–3 THz 谱分数、异质结构界面份额及代表性峰频率准确。",
+      "machine_check": "VACF 积分容差 0.02 ps，谱分数容差 0.02，界面份额容差 0.03，峰频率容差 0.11 THz。"
+    },
+    {
+      "id": "interface_statistics",
+      "points": 15,
+      "description": "异质结构界面与非界面通道的逐原子 2–3 THz 带功率 Welch 检验、95% 置信区间和 Hedges g 正确。",
+      "machine_check": "样本数必须精确；组均值、均值差、置信区间、t 值、自由度、p 值和 Hedges g 按数值容差评分；拒绝等均值布尔值必须精确。"
+    },
+    {
+      "id": "physical_conclusions",
+      "points": 10,
+      "description": "更快衰减、2–3 THz 增强、界面份额大于 0.90、界面带功率显著增强四个判定以及方法和物理结论正确。",
+      "machine_check": "四个布尔判定各 2 分，固定 physical_conclusion 占 1 分，固定 method 描述占 1 分。"
+    }
+  ],
+  "anti_leakage": {
+    "ground_truth_visibility": "maintainer_only",
+    "rule": "被测模型只能获得 prompt.txt 和 inputs/；ground_truth/、rubric.json 与 harness/ 由维护者隔离。"
+  }
+}

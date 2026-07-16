@@ -1,0 +1,137 @@
+任务：统计学+数学——高维回归误差、泛化与受约束后验校准
+
+背景与数据声明
+
+这是一个统计学与数学优化交叉任务。你需要用 MATLAB 对一组高维回归预测进行观测-预测对齐，计算总体与分组误差、R²、逐样本残差和残差分布，依据训练/测试损失曲线评估泛化能力，并求解一个唯一的受约束后验校准问题。NEP/DFT 仅是能量、力、应力数据的应用背景，不要求材料科学专业知识。所有附件均为固定随机种子生成的合成数据，不是论文原始科研数据或论文数值结论。
+
+本题不要求、也不评分数据泄漏审计。不要根据文件顺序直接配对数据。
+
+输入附件
+
+1. inputs/test_reference.extxyz
+   - 共 106 个结构，材料标签为 CsSnBr3、Cs2SnBr6、hetero_N2。
+   - 每帧第一行为原子数。
+   - 第二行元数据至少包含 structure_id、material、energy_ref_eV 和 stress_ref_GPa。
+   - stress_ref_GPa 的六个分量按 xx, yy, zz, yz, xz, xy 排列。
+   - 原子行依次为 species, x, y, z, atom_id, fx_ref, fy_ref, fz_ref。
+
+2. inputs/test_nep_predictions.h5
+   - /structure_id：长度 N 的结构标识。
+   - /energy_pred_eV：长度 N 的结构总能量预测，单位 eV。
+   - /stress_pred_GPa：逻辑形状 N x 6，Voigt 顺序为 xx, yy, zz, yz, xz, xy，单位 GPa。
+   - /offsets：长度 N+1 的零基累计偏移；第 i 个结构对应逻辑区间 [offsets(i), offsets(i+1))。
+   - /atom_id：长度 M 的持久原子标识。
+   - /forces_pred_eV_A：逻辑形状 M x 3，单位 eV/Angstrom。
+   - HDF5 被不同语言读取时二维数组方向可能转置，应根据 N、M 和分量数检查并规范化形状。
+
+3. inputs/training_history.csv
+   - step 从 0 到 100000。
+   - 至少包含 train_total_loss 和 test_total_loss，以及能量、力、应力的分项损失。
+
+强制对齐规则
+
+1. 参考结构与预测结构必须按 structure_id 匹配，不得按文件中的行序匹配。
+2. 在每个已匹配结构内，预测力必须按 atom_id 重排到参考原子的顺序。
+3. structure_id 集合、每个结构的 atom_id 集合必须完全一致；重复、缺失或多余标识应视为输入错误。
+
+指标定义
+
+对 overall、CsSnBr3、Cs2SnBr6、hetero_N2 四个分组分别计算：
+
+- energy_RMSE_meV_atom：先将结构总能量误差除以该结构原子数，再从 eV/atom 转为 meV/atom，然后对结构求 RMSE。
+- energy_R2：以每个结构的 eV/atom 参考值和预测值计算 R2。
+- force_RMSE_eV_A：将已按 atom_id 对齐的全部原子和三个笛卡尔分量展平后计算 RMSE。
+- force_R2：对上述展平的参考力与预测力计算 R2。
+- stress_RMSE_GPa：将全部结构的六个 Voigt 分量展平后计算 RMSE。
+- stress_R2：对上述展平的参考应力与预测应力计算 R2。
+
+R2 统一定义为 1 - SSE/SST，其中 SSE=sum((prediction-reference)^2)，SST=sum((reference-mean(reference))^2)。
+
+可靠性阈值
+
+回归模型的数值精度必须同时满足：
+
+- overall energy_RMSE_meV_atom <= 2.0
+- overall force_RMSE_eV_A <= 0.08
+- overall stress_RMSE_GPa <= 0.10
+- overall energy_R2 >= 0.99
+- overall force_R2 >= 0.70
+- overall stress_R2 >= 0.95
+
+训练过程满足以下条件才判定为共同收敛且无明显过拟合：
+
+- 末步训练损失相对首步降低至少 80%。
+- 末步测试损失相对首步降低至少 80%。
+- 末步测试损失 / 最低测试损失 <= 1.10。
+- 末步测试损失 / 末步训练损失 <= 1.35。
+
+只有数值精度、共同收敛和无明显过拟合全部通过时，应用层布尔结论 reliable_for_thermal_transport 才为 true。该字段只是对统计阈值的确定性汇总，不考查热输运专业判断。
+
+受约束后验校准
+
+在不重新训练模型的前提下，只允许三个全局参数：
+
+- b_E：能量逐原子偏置，单位 eV/atom。
+- s_F：全部力分量的统一无量纲尺度。
+- s_S：全部应力分量的统一无量纲尺度。
+
+校准后的预测定义为：
+
+- e_pred_cal = e_pred + b_E，其中 e 表示 eV/atom。
+- F_pred_cal = s_F * F_pred。
+- S_pred_cal = s_S * S_pred。
+
+令 theta=[b_E,s_F,s_S]，theta0=[0,1,1]。必须用 Optimization Toolbox 的 lsqlin 求解以下目标，初值使用 theta0，选项使用 optimoptions('lsqlin','Display','off')，不得自行改变权重、边界或正则：
+
+J(theta) = mean(((e_pred+b_E-e_ref)/0.01)^2)
+         + mean(((s_F*F_pred-F_ref)/0.10)^2)
+         + mean(((s_S*S_pred-S_ref)/0.10)^2)
+         + 0.01*((b_E/0.005)^2 + ((s_F-1)/0.05)^2 + ((s_S-1)/0.05)^2)
+
+边界为：
+
+- -0.005 <= b_E <= 0.005
+- 0.80 <= s_F <= 1.20
+- 0.80 <= s_S <= 1.20
+
+把三个 mean 项分别转写为按样本数和尺度加权的线性最小二乘行，再把 L2 正则转写为三行增广观测。正则矩阵满秩，因此增广设计矩阵列满秩、目标严格凸，受约束可行域为闭凸盒，解唯一。必须报告严格凸性检查、求解器退出状态、目标值和三个参数。
+
+Statistics and Machine Learning Toolbox 的实际使用要求
+
+分别对校准前后以下三组展平残差使用 fitdist(residual,'Normal') 拟合正态分布，并报告拟合的 mean、std 及直接计算的 rmse：
+
+- energy_meV_atom
+- force_eV_A
+- stress_GPa
+
+这里的正态拟合只用于残差描述，不改变 RMSE、R² 或校准目标。
+
+必须提交的输出
+
+把以下四个文件写入指定提交目录；三个 JSON 文件都必须包含 synthetic_data=true。
+
+1. metrics.json
+   - 顶层字段：schema_version="1.0"、synthetic_data=true、stress_voigt_order。
+   - 分组字段：overall、CsSnBr3、Cs2SnBr6、hetero_N2。
+   - 每个分组包含 count、energy_RMSE_meV_atom、energy_R2、force_RMSE_eV_A、force_R2、stress_RMSE_GPa、stress_R2。
+
+2. residuals.csv
+   - 必须恰好一行对应一个 structure_id，共 106 行。
+   - 列顺序：structure_id, material, n_atoms, energy_ref_eV, energy_pred_eV, energy_error_meV_atom, force_rmse_eV_A, stress_rmse_GPa, max_force_abs_error_eV_A。
+
+3. training_assessment.json
+   - 顶层字段至少包括 schema_version="1.0"、synthetic_data=true、n_records、first_step、last_step、initial_train_total_loss、final_train_total_loss、initial_test_total_loss、final_test_total_loss、train_loss_reduction_fraction、test_loss_reduction_fraction、best_test_step、final_to_best_test_loss_ratio、final_test_to_train_loss_ratio、converged、no_overfitting、metric_quality_pass、reliable_for_thermal_transport。
+
+4. calibration.json
+   - 顶层字段：schema_version="1.0"、synthetic_data=true、method="bounded_regularized_lsqlin"。
+   - objective：三个归一化尺度、equal_block_weighting=true、regularization_lambda=0.01、regularization_center、regularization_scales。
+   - bounds：b_E、s_F、s_S 的上下界。
+   - parameters：energy_bias_eV_atom、force_scale、stress_scale。
+   - solver：name="lsqlin"、exitflag、iterations、resnorm。
+   - unique_solution：严格凸且求解成功时为 true。
+   - metrics_before 与 metrics_after：都包含 overall、CsSnBr3、Cs2SnBr6、hetero_N2 四组及 metrics.json 中相同的七个分组字段。
+   - residual_statistics_before 与 residual_statistics_after：都包含 energy_meV_atom、force_eV_A、stress_GPa；每项含 mean、std、rmse、count。
+
+不得把这些合成结果表述为真实 DFT、真实 NEP 模型或论文实验结论。
+
+运行 Harness 会另外保存 MATLAB 标准输出和执行轨迹，作为 model_runs.trace_file；它不属于上述四个提交文件，也不计入数值评分。Ground Truth 生成器必须产生 matlab_trace.txt，以记录 MATLAB 版本、Toolbox 调用、关键指标、校准参数和输出位置。

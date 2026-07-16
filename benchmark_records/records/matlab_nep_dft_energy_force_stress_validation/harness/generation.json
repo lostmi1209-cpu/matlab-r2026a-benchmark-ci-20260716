@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "record_id": "matlab_nep_dft_energy_force_stress_validation",
+  "harness_type": "matlab_ground_truth_generation",
+  "entrypoint": "ground_truth/generate_ground_truth.m",
+  "call": "generate_ground_truth()",
+  "working_directory": "ground_truth",
+  "runtime": {
+    "matlab_release": "R2026a Update 3",
+    "operating_system": "GitHub Actions ubuntu-latest",
+    "toolboxes": [
+      "MATLAB",
+      "Statistics and Machine Learning Toolbox",
+      "Optimization Toolbox"
+    ],
+    "third_party_software": [],
+    "network_required_during_execution": false,
+    "timeout_seconds": 900
+  },
+  "agent": {
+    "type": "deterministic_matlab_script",
+    "llm_used": false,
+    "status": "pending"
+  },
+  "inputs": {
+    "directory": "inputs",
+    "mode": "read_only"
+  },
+  "outputs": {
+    "directory": "ground_truth/output",
+    "files": [
+      "metrics.json",
+      "residuals.csv",
+      "training_assessment.json",
+      "calibration.json",
+      "ground_truth.mat",
+      "matlab_trace.txt"
+    ]
+  },
+  "execution_status": "pending"
+}

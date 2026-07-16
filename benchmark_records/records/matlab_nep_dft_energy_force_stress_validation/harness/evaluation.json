@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "record_id": "matlab_nep_dft_energy_force_stress_validation",
+  "harness_type": "deterministic_matlab_evaluator",
+  "entrypoint": "harness/evaluate_submission.m",
+  "function_signature": "report = evaluate_submission(submission_dir, ground_truth_dir, report_path)",
+  "pass_score": 80,
+  "max_score": 100,
+  "runtime": {
+    "matlab_release": "R2026a Update 3",
+    "operating_system": "GitHub Actions ubuntu-latest",
+    "toolboxes": [
+      "MATLAB"
+    ],
+    "third_party_software": [],
+    "network_required_during_execution": false,
+    "timeout_seconds": 300
+  },
+  "agent": {
+    "type": "deterministic_matlab_script",
+    "llm_used": false,
+    "status": "pending"
+  },
+  "ground_truth_visibility_to_submission": "hidden",
+  "report_format": "JSON",
+  "required_submission_files": [
+    "metrics.json",
+    "residuals.csv",
+    "training_assessment.json",
+    "calibration.json"
+  ],
+  "self_check": "Using ground_truth/output as both submission_dir and ground_truth_dir must score 100/100.",
+  "execution_status": "pending"
+}
