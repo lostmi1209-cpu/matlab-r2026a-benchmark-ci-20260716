@@ -1,2 +1,5 @@
 results/
 benchmark_records/records/*/ground_truth/output/
+benchmark_records/blind_evaluation/current_model/*/submission/output/
+benchmark_records/blind_evaluation/current_model/*/result/
+benchmark_records/blind_evaluation/current_model/blind_evaluation_summary.json

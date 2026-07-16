@@ -1,0 +1,55 @@
+name: MATLAB no-context blind evaluation
+
+on:
+  push:
+    branches:
+      - codex/ground-truth-records-20260716
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matlab-blind-evaluation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  blind-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up MATLAB and cross-disciplinary toolboxes
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2026a
+          products: >-
+            Statistics_and_Machine_Learning_Toolbox
+            Optimization_Toolbox
+            Signal_Processing_Toolbox
+
+      - name: Regenerate private Ground Truth and score blind solutions
+        uses: matlab-actions/run-command@v3
+        with:
+          command: >-
+            addpath("benchmark_records/ci");
+            run_all_ground_truth;
+            addpath("benchmark_records/blind_evaluation/current_model/ci");
+            run_blind_evaluation
+
+      - name: Upload blind outputs, traces, and scores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matlab-current-model-blind-evaluation
+          path: |
+            benchmark_records/blind_evaluation/current_model/blind_evaluation_summary.json
+            benchmark_records/blind_evaluation/current_model/*/submission/output/
+            benchmark_records/blind_evaluation/current_model/*/submission/agent_output.txt
+            benchmark_records/blind_evaluation/current_model/*/submission/agent_trace.jsonl
+            benchmark_records/blind_evaluation/current_model/*/result/
+          if-no-files-found: error
+          retention-days: 3

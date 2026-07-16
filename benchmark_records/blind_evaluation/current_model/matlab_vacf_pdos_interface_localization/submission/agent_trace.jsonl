@@ -1,0 +1,10 @@
+{"step":1,"action":"read","path":"task/prompt.txt","detail":"Read the public problem statement and extracted the required signal-processing, statistical, and output contracts."}
+{"step":2,"action":"read","path":"task/inputs/systems.csv","detail":"Read the public mapping for CsSnBr3, Cs2SnBr6, and hetero_N2 trajectory filenames."}
+{"step":3,"action":"inspect","path":"task/inputs/trajectories/*.h5","detail":"Inspected only public trajectory files for dataset-name and region-label representation; no reference outputs or evaluator data were accessed."}
+{"step":4,"action":"decision","detail":"Use frame and atom counts from /time_fs and /mass_amu to permute /velocities_A_ps into [frame,atom,xyz], with defensive decoding of HDF5 string labels."}
+{"step":5,"action":"decision","detail":"Apply mass-weighted COM removal followed by per-atom/per-component full-trajectory mean removal; use zero-padded FFT linear autocorrelation divided by N-lag and normalized at lag zero."}
+{"step":6,"action":"decision","detail":"Use hann(N,'symmetric'), raw squared FFT magnitudes without one-sided doubling, xyz sum per atom, atom mean for total PDOS, and trapezoidal unit-integral normalization."}
+{"step":7,"action":"decision","detail":"Use raw per-atom 2-3 THz integrated powers for interface share, required two-sided unequal-variance ttest2, pooled-variance Cohen d, and specified Hedges correction."}
+{"step":8,"action":"write","path":"submission/solution.m","detail":"Wrote the required function entry point and complete runtime generation of vacf.csv, pdos.csv, and phonon_summary.json."}
+{"step":9,"action":"write","path":"submission/agent_output.txt","detail":"Wrote a concise method summary."}
+{"step":10,"action":"write","path":"submission/agent_trace.jsonl","detail":"Recorded public-file reads, algorithm decisions, and submission writes."}

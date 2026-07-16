@@ -1,9 +1,6 @@
 name: MATLAB benchmark Ground Truth
 
 on:
-  push:
-    branches:
-      - codex/ground-truth-records-20260716
   workflow_dispatch:
 
 permissions:
