@@ -45,6 +45,10 @@
     "notes": "不依赖 GPUMD、NEP 可执行程序、Python 包或其他第三方软件。"
   },
   "ground_truth": {
+    "status": "complete_matlab_execution",
+    "matlab_release": "R2026a Update 3",
+    "ci_run_url": "https://github.com/lostmi1209-cpu/matlab-r2026a-benchmark-ci-20260716/actions/runs/29477253847",
+    "self_evaluation_score": 100,
     "generator": "ground_truth/generate_ground_truth.m",
     "output_directory": "ground_truth/output",
     "expected_files": [
@@ -55,12 +59,27 @@
       "ground_truth.mat",
       "matlab_trace.txt"
     ],
-    "execution_status": "pending",
+    "execution_status": "complete",
     "provenance": "由 MATLAB 对公开合成输入确定性计算；不是论文原始 DFT/NEP 数据。"
   },
   "difficulty": {
     "level": "hard",
-    "rationale": "需要从异构附件构造一致的观测-预测样本，完成双层键对齐、分组 RMSE/R²、残差分布与泛化判断，并把三类响应联合写成严格凸的有界正则最小二乘问题。"
+    "rationale": "需要从异构附件构造一致的观测-预测样本，完成双层键对齐、分组 RMSE/R²、残差分布与泛化判断，并把三类响应联合写成严格凸的有界正则最小二乘问题。",
+    "difficulty_pretest_only": {
+      "status": "complete",
+      "evaluation_type": "no_context_current_model_one_shot",
+      "official_model_or_judge_run": false,
+      "matlab_run_url": "https://github.com/lostmi1209-cpu/matlab-r2026a-benchmark-ci-20260716/actions/runs/29478465272",
+      "score": 96.173913,
+      "all_tasks_perfect": false,
+      "failure_summary": "主体分析正确，但受约束校准的部分元数据与严格参考定义不完全一致。",
+      "solution": "../../blind_evaluation/current_model/matlab_nep_dft_energy_force_stress_validation/submission/solution.m",
+      "agent_output": "../../blind_evaluation/current_model/matlab_nep_dft_energy_force_stress_validation/submission/agent_output.txt",
+      "agent_trace": "../../blind_evaluation/current_model/matlab_nep_dft_energy_force_stress_validation/submission/agent_trace.jsonl",
+      "candidate_output": "../../blind_evaluation/current_model/matlab_nep_dft_energy_force_stress_validation/submission/output",
+      "matlab_trace": "../../blind_evaluation/current_model/matlab_nep_dft_energy_force_stress_validation/result/matlab_execution_trace.txt",
+      "score_file": "../../blind_evaluation/current_model/matlab_nep_dft_energy_force_stress_validation/result/score.json"
+    }
   },
   "rubric_file": "rubric.json",
   "generation_harness_file": "harness/generation.json",
@@ -85,5 +104,5 @@
     "scores": null,
     "trace_file": null
   },
-  "completion_status": "record_ready_ground_truth_pending"
+  "completion_status": "ground_truth_complete_model_evaluation_pending"
 }

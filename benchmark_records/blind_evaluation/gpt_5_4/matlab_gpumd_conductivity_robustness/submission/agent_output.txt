@@ -1,0 +1,3 @@
+Created [solution.m](E:\MATLAB_Blind_GPT54_20260716\matlab_gpumd_conductivity_robustness\submission\solution.m): a self-contained MATLAB entrypoint `solution(input_dir, output_dir)` that reads all 81 public trajectories, validates the burn-in and time-axis rules, computes run-level estimates, material summaries, robustness metrics, ordering, constrained `lsqcurvefit` size convergence, and writes `run_estimates.csv`, `conductivity_summary.json`, and `matlab_trace.txt` under `output_dir`.
+
+No MATLAB runtime was available in this workspace, so I could not execute the file locally.

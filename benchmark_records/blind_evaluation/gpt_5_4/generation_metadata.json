@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "evaluation_type": "no_context_gpt_5_4_one_shot_pretest",
+  "candidate_model": "gpt-5.4",
+  "model_reasoning_effort": "xhigh",
+  "service_tier": "default",
+  "provider_model_id_verified": true,
+  "provider_catalog_exact_model_match": "gpt-5.4",
+  "generation_rules": {
+    "one_shot_per_record": true,
+    "ephemeral_session": true,
+    "current_conversation_context_provided": false,
+    "visible_materials": [
+      "prompt.txt",
+      "public inputs"
+    ],
+    "ground_truth_visible": false,
+    "rubric_visible": false,
+    "evaluation_harness_visible": false,
+    "matlab_runtime_feedback_before_freeze": false,
+    "repair_retry_after_freeze": false
+  },
+  "infrastructure_note": "An initial GPUMD invocation was discarded before solution generation because the Windows CLI sandbox was unexpectedly read-only. A separate write-only probe verified the corrected runner before the three frozen submissions were generated. No MATLAB or grader feedback was available during either invocation.",
+  "records": {
+    "matlab_gpumd_conductivity_robustness": {
+      "thread_id": "019f69db-8dac-74e0-bb48-50d990eec106",
+      "solution_sha256": "dcecc7643bd9170d0effa593489a01a9a4ac46683e8915fe1174f2dc95a2e951",
+      "solution_bytes": 12047,
+      "input_tokens": 550873,
+      "cached_input_tokens": 474880,
+      "output_tokens": 16046,
+      "reasoning_output_tokens": 7733,
+      "solution_frozen_utc": "2026-07-16T07:49:13.4156102Z"
+    },
+    "matlab_nep_dft_energy_force_stress_validation": {
+      "thread_id": "019f69e8-1bb1-7c53-9587-dcde6b6e298a",
+      "solution_sha256": "5d254ffddab5dbab19897199a5e727f488ac2d4f01f3f118f3938f0b62daeeae",
+      "solution_bytes": 31349,
+      "input_tokens": 442408,
+      "cached_input_tokens": 373376,
+      "output_tokens": 34583,
+      "reasoning_output_tokens": 22663,
+      "solution_frozen_utc": "2026-07-16T08:00:30.3613829Z"
+    },
+    "matlab_vacf_pdos_interface_localization": {
+      "thread_id": "019f69f3-8985-70e3-9315-5a9fc0280350",
+      "solution_sha256": "23fb77d4b50974d625cb6fc839543759dcdb3902e558d29ecc05791805aee456",
+      "solution_bytes": 14526,
+      "input_tokens": 374074,
+      "cached_input_tokens": 293760,
+      "output_tokens": 21806,
+      "reasoning_output_tokens": 12808,
+      "solution_frozen_utc": "2026-07-16T08:10:38.5124676Z"
+    }
+  }
+}

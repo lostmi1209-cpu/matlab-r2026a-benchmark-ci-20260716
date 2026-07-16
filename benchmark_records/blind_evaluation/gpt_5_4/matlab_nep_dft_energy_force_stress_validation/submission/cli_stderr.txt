@@ -1,0 +1,61 @@
+﻿node.exe : Reading additional input from stdin...
+At C:\Users\Administrator\AppData\Roaming\npm\codex.ps1:24 char:5
++     & "node$exe"  "$basedir/node_modules/@openai/codex/bin/codex.js"  ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Reading additional input from stdin...:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2026-07-16T07:50:46.946957Z  WARN codex_core_plugins::remote::remote_installed_plugin_sync: remote installed plugin bun
+dle sync failed error=chatgpt authentication required for remote plugin catalog; api key auth is not supported
+2026-07-16T07:50:47.040055Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell sna
+pshot not supported yet for PowerShell
+2026-07-16T07:50:48.231379Z  WARN codex_core_plugins::manager: failed to warm featured plugin ids cache error=remote pl
+ugin sync request to https://chatgpt.com/backend-api/plugins/featured failed with status 401 Unauthorized: {"detail":"U
+nauthorized"}
+2026-07-16T07:50:57.004164Z  WARN codex_core_plugins::startup_remote_sync: skipping startup remote plugin sync because 
+curated marketplace is not ready codex_home=C:\Users\Administrator\Documents\0714样例\outputs\matlab_benchmark_records\_g
+pt54_cli_home
+2026-07-16T07:51:07.724023Z  WARN codex_core_plugins::startup_sync: git sync failed for curated plugin sync; falling ba
+ck to GitHub HTTP error=git ls-remote curated plugins repo failed with status exit code: 128: fatal: unable to access '
+https://github.com/openai/plugins.git/': Recv failure: Connection was reset git_binary="git"
+2026-07-16T07:51:23.257409Z ERROR codex_core::tools::router: error=Exit code: 1
+Wall time: 0.2 seconds
+Output:
+===== utf-8 =====
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+UnicodeEncodeError: 'gbk' codec can't encode character '\xb2' in position 102: illegal multibyte sequence
+
+2026-07-16T07:51:23.282101Z ERROR codex_core::tools::router: error=Exit code: 1
+Wall time: 0.2 seconds
+Output:
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'h5py'
+
+2026-07-16T07:51:41.865777Z  WARN codex_core_plugins::startup_sync: GitHub HTTP sync failed for curated plugin sync; fa
+lling back to export archive error=failed to read download curated plugins archive response from https://api.github.com
+/repos/openai/plugins/zipball/11c74d6ba24d3a6d48f54a194cd00ef3beea18f9: error decoding response body backup_archive_api
+_url="https://chatgpt.com/backend-api/plugins/export/curated"
+2026-07-16T07:51:47.769843Z ERROR codex_core::tools::router: error=Exit code: 1
+Wall time: 0.3 seconds
+Output:
+
+2026-07-16T07:52:12.940301Z  WARN codex_core_plugins::manager: failed to sync curated plugins repo: git sync failed for
+ curated plugin sync: git ls-remote curated plugins repo failed with status exit code: 128: fatal: unable to access 'ht
+tps://github.com/openai/plugins.git/': Recv failure: Connection was reset; GitHub HTTP sync failed for curated plugin s
+ync: failed to read download curated plugins archive response from https://api.github.com/repos/openai/plugins/zipball/
+11c74d6ba24d3a6d48f54a194cd00ef3beea18f9: error decoding response body; export archive sync failed for curated plugin s
+ync: failed to read download curated plugins export archive response from https://files.openai.com/content?id=file_0000
+0000df707230931ede93e7dd22c0&cdn=1&cp=pi&ma=3153600000&ts=0&p=pi&cid=1&sig=83299819ba70ece1810e085d724816c316725bd92453
+cb57b41fb4be0d1c0a7a&v=0: error decoding response body
+2026-07-16T07:52:14.407740Z ERROR codex_core::tools::router: error=Exit code: 1
+Wall time: 0.2 seconds
+Output:
+INFO: Could not find files for the given pattern(s).
+
+2026-07-16T07:52:14.408051Z ERROR codex_core::tools::router: error=Exit code: 1
+Wall time: 0.2 seconds
+Output:
+INFO: Could not find files for the given pattern(s).
+

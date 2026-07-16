@@ -6,7 +6,27 @@
   "category": "统计学+数学",
   "domain": "统计学+数学",
   "task_type": "MATLAB 多因素重复实验统计分析与约束最小二乘拟合",
-  "difficulty": "hard",
+  "difficulty": {
+    "level": "hard",
+    "rationale": "需要按题面给出的文本导入规则处理 81 条重复时序轨迹，并完成分组不确定度、稳健性判定和带物理约束的非线性收敛拟合。",
+    "difficulty_pretest_only": {
+      "status": "superseded_by_prompt_clarification",
+      "evaluation_type": "no_context_current_model_one_shot",
+      "official_model_or_judge_run": false,
+      "valid_for_current_prompt": false,
+      "matlab_run_url": "https://github.com/lostmi1209-cpu/matlab-r2026a-benchmark-ci-20260716/actions/runs/29478465272",
+      "score": null,
+      "historical_score_before_prompt_clarification": 0,
+      "all_tasks_perfect": false,
+      "failure_summary": "历史候选解因未显式指定 .out 的文本 FileType 而中止；当前题面已明确导入规则，因此该 0 分不再作为当前版本难度证据。",
+      "prompt_revision": "题面现已明确 .out 是带表头的 CSV 文本，并要求 readtable 显式设置 FileType=text 或使用等价文本导入配置。",
+      "solution": "../../blind_evaluation/current_model/matlab_gpumd_conductivity_robustness/submission/solution.m",
+      "agent_output": "../../blind_evaluation/current_model/matlab_gpumd_conductivity_robustness/submission/agent_output.txt",
+      "agent_trace": "../../blind_evaluation/current_model/matlab_gpumd_conductivity_robustness/submission/agent_trace.jsonl",
+      "matlab_trace": "../../blind_evaluation/current_model/matlab_gpumd_conductivity_robustness/result/matlab_execution_trace.txt",
+      "score_file": "../../blind_evaluation/current_model/matlab_gpumd_conductivity_robustness/result/score.json"
+    }
+  },
   "synthetic_data": true,
   "source_alignment": {
     "research_context": "任务来源于论文中 GPUMD/HNEMD 重复模拟的收敛性检查思路；材料名和热导率只提供应用背景，主考时间序列汇总、SEM/CI、分组效应稳健性与约束最小二乘收敛拟合。",
@@ -51,7 +71,10 @@
     "third_party_dependencies": []
   },
   "ground_truth": {
-    "status": "pending_matlab_execution",
+    "status": "complete_matlab_execution",
+    "matlab_release": "R2026a Update 3",
+    "ci_run_url": "https://github.com/lostmi1209-cpu/matlab-r2026a-benchmark-ci-20260716/actions/runs/29477253847",
+    "self_evaluation_score": 100,
     "generator": "ground_truth/generate_ground_truth.m",
     "output_directory": "ground_truth/output",
     "expected_files": [
@@ -89,5 +112,5 @@
     "trace": null,
     "note": "尚未执行 Judge，不填充或伪造评分与 Trace。"
   },
-  "completion_status": "pending_ground_truth_and_model_evaluation"
+  "completion_status": "ground_truth_complete_model_evaluation_pending"
 }

@@ -14,6 +14,8 @@
    - `kappa_out_W_mK`
    - `kappa_total_W_mK`
 
+注意：`.out` 只是 GPUMD 风格的文件命名，文件内容是带表头的逗号分隔文本。MATLAB 使用 `readtable` 时必须显式设置 `'FileType','text'`，或采用其他明确指定为文本 CSV 的等价导入配置；不得依赖 `.out` 扩展名自动判断文件类型。
+
 必须采用的分析规则
 
 1. 对每条轨迹固定丢弃 `time_ps < 600 ps` 的平衡段，只用 `time_ps >= 600 ps` 的样本。

@@ -1,0 +1,3 @@
+Created [submission/solution.m](E:/MATLAB_Blind_GPT54_20260716/matlab_vacf_pdos_interface_localization/submission/solution.m).
+
+It implements the full required pipeline: HDF5 loading with dimension-order correction, mass-weighted COM removal, time-mean removal, unbiased FFT VACF, symmetric Hann-window PDOS, heterostructure Welch `ttest2` and Hedges g, plus writing `vacf.csv`, `pdos.csv`, and `phonon_summary.json` under `output_dir`. MATLAB was not executed in this environment.

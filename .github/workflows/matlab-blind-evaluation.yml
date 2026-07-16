@@ -1,4 +1,4 @@
-name: MATLAB no-context blind evaluation
+name: MATLAB GPT-5.4 no-context blind evaluation
 
 on:
   push:
@@ -31,25 +31,27 @@ jobs:
             Optimization_Toolbox
             Signal_Processing_Toolbox
 
-      - name: Regenerate private Ground Truth and score blind solutions
+      - name: Regenerate private Ground Truth and score frozen GPT-5.4 solutions
         uses: matlab-actions/run-command@v3
         with:
           command: >-
             addpath("benchmark_records/ci");
             run_all_ground_truth;
-            addpath("benchmark_records/blind_evaluation/current_model/ci");
+            addpath("benchmark_records/blind_evaluation/gpt_5_4/ci");
             run_blind_evaluation
 
       - name: Upload blind outputs, traces, and scores
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: matlab-current-model-blind-evaluation
+          name: matlab-gpt-5-4-blind-evaluation
           path: |
-            benchmark_records/blind_evaluation/current_model/blind_evaluation_summary.json
-            benchmark_records/blind_evaluation/current_model/*/submission/output/
-            benchmark_records/blind_evaluation/current_model/*/submission/agent_output.txt
-            benchmark_records/blind_evaluation/current_model/*/submission/agent_trace.jsonl
-            benchmark_records/blind_evaluation/current_model/*/result/
+            benchmark_records/blind_evaluation/gpt_5_4/generation_metadata.json
+            benchmark_records/blind_evaluation/gpt_5_4/blind_evaluation_summary.json
+            benchmark_records/blind_evaluation/gpt_5_4/*/submission/output/
+            benchmark_records/blind_evaluation/gpt_5_4/*/submission/agent_output.txt
+            benchmark_records/blind_evaluation/gpt_5_4/*/submission/agent_trace.jsonl
+            benchmark_records/blind_evaluation/gpt_5_4/*/submission/cli_stderr.txt
+            benchmark_records/blind_evaluation/gpt_5_4/*/result/
           if-no-files-found: error
           retention-days: 3

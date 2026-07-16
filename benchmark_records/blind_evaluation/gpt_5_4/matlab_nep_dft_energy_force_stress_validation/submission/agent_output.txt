@@ -1,0 +1,5 @@
+Created [solution.m](E:/MATLAB_Blind_GPT54_20260716/matlab_nep_dft_energy_force_stress_validation/submission/solution.m).
+
+It implements the full MATLAB pipeline: strict `extxyz`/HDF5 alignment and validation, baseline metrics and residuals, training assessment, bounded regularized `lsqlin` calibration, before/after residual normal fits via `fitdist`, and writing `metrics.json`, `residuals.csv`, `training_assessment.json`, `calibration.json`, plus `matlab_trace.txt` under `output_dir`.
+
+MATLAB was not available in the shell here, so I did not execute the function locally.

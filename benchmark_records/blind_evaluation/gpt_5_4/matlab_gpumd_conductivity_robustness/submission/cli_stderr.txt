@@ -1,0 +1,45 @@
+﻿node.exe : Reading additional input from stdin...
+At C:\Users\Administrator\AppData\Roaming\npm\codex.ps1:24 char:5
++     & "node$exe"  "$basedir/node_modules/@openai/codex/bin/codex.js"  ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Reading additional input from stdin...:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2026-07-16T07:37:04.158189Z  WARN codex_core_plugins::remote::remote_installed_plugin_sync: remote installed plugin bun
+dle sync failed error=chatgpt authentication required for remote plugin catalog; api key auth is not supported
+2026-07-16T07:37:04.235825Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell sna
+pshot not supported yet for PowerShell
+2026-07-16T07:37:06.826541Z  WARN codex_core_plugins::manager: failed to warm featured plugin ids cache error=remote pl
+ugin sync request to https://chatgpt.com/backend-api/plugins/featured failed with status 401 Unauthorized: {"detail":"U
+nauthorized"}
+2026-07-16T07:37:14.177988Z  WARN codex_core_plugins::startup_remote_sync: skipping startup remote plugin sync because 
+curated marketplace is not ready codex_home=C:\Users\Administrator\Documents\0714样例\outputs\matlab_benchmark_records\_g
+pt54_cli_home
+2026-07-16T07:37:25.341508Z  WARN codex_core_plugins::startup_sync: git sync failed for curated plugin sync; falling ba
+ck to GitHub HTTP error=git ls-remote curated plugins repo failed with status exit code: 128: fatal: unable to access '
+https://github.com/openai/plugins.git/': Failed to connect to github.com port 443 after 21089 ms: Could not connect to 
+server git_binary="git"
+2026-07-16T07:37:58.732044Z  WARN codex_core_plugins::startup_sync: GitHub HTTP sync failed for curated plugin sync; fa
+lling back to export archive error=failed to read download curated plugins archive response from https://api.github.com
+/repos/openai/plugins/zipball/11c74d6ba24d3a6d48f54a194cd00ef3beea18f9: error decoding response body backup_archive_api
+_url="https://chatgpt.com/backend-api/plugins/export/curated"
+2026-07-16T07:38:03.735505Z  WARN codex_core_plugins::manager: failed to sync curated plugins repo: git sync failed for
+ curated plugin sync: git ls-remote curated plugins repo failed with status exit code: 128: fatal: unable to access 'ht
+tps://github.com/openai/plugins.git/': Failed to connect to github.com port 443 after 21089 ms: Could not connect to se
+rver; GitHub HTTP sync failed for curated plugin sync: failed to read download curated plugins archive response from ht
+tps://api.github.com/repos/openai/plugins/zipball/11c74d6ba24d3a6d48f54a194cd00ef3beea18f9: error decoding response bod
+y; export archive sync failed for curated plugin sync: failed to get curated plugins export archive metadata from https
+://chatgpt.com/backend-api/plugins/export/curated: error sending request for url (https://chatgpt.com/backend-api/plugi
+ns/export/curated)
+2026-07-16T07:40:18.658532Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (1/5 in 
+207ms)...
+2026-07-16T07:44:09.286039Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (1/5 in 
+181ms)...
+2026-07-16T07:48:42.561149Z ERROR codex_core::tools::router: error=Exit code: 1
+Wall time: 0.2 seconds
+Output:
+
+2026-07-16T07:48:42.562906Z ERROR codex_core::tools::router: error=Exit code: 1
+Wall time: 0.2 seconds
+Output:
+
