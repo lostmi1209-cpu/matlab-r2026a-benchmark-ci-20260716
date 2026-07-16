@@ -1,0 +1,44 @@
+name: MATLAB R2026a capability check
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matlab-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up MATLAB and required toolboxes
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2026a
+          products: >-
+            Signal_Processing_Toolbox
+            Statistics_and_Machine_Learning_Toolbox
+            Curve_Fitting_Toolbox
+            Optimization_Toolbox
+            Parallel_Computing_Toolbox
+
+      - name: Run capability checks
+        uses: matlab-actions/run-command@v3
+        with:
+          command: check_matlab_ci
+
+      - name: Upload reports and trace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matlab-r2026a-capability-results
+          path: results/
+          if-no-files-found: error
+          retention-days: 7
